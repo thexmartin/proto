@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package telegram;
+
+option go_package = "github.com/thexmartin/proto/account;telegram";
+
+import "google/protobuf/timestamp.proto";
+
+message TgFile {
+  int32 id = 1;
+  string remote_id = 2;
+  string remote_unique_id = 3;
+  int64 size = 4;
+}
+
+message TgUser {
+  int64 id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string username = 4;
+  string bio = 5;
+  google.protobuf.Timestamp birthdate = 6;
+  TgFile avatar = 7;
+  string state = 8;
+  google.protobuf.Timestamp was_online = 9;
+  bool was_online_enabled = 10;
+  bool is_premium = 11;
+}
+
+message TgChat {
+  int64 id = 1;
+  string name = 2;
+  string type = 3; // private / secret
+  TgFile avatar = 4;
+}
+
+message TgSender {
+  string type = 1; // user | chat | hidden_user
+  int64 id = 2;
+  TgUser user = 3;
+  TgChat chat = 4;
+}
+
+message TgForwardInfo {
+  string origin = 1;
+  int64 from_id = 2;
+  string from_name = 3;
+}
+
+message TgMessage {
+  int64 id = 1;
+  int64 chat_id = 2;
+  int64 sender_id = 3;
+  int64 reply_to_id = 4;
+  int64 original_telegram_id = 5;
+  int64 media_album_id = 6;
+  string type = 7;
+  string text = 8;
+  TgForwardInfo forward = 9;
+  TgFile file = 10;
+  TgChat chat = 11;
+  google.protobuf.Timestamp date = 12;
+}

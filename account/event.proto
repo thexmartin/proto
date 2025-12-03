@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package events;
+
+
+option go_package = "github.com/thexmartin/proto/account;event";
+
+import "account/telegram.proto";
+import "google/protobuf/timestamp.proto";
+
+enum TelegramEventType {
+  UNKNOWN = 0;
+  MESSAGE_NEW = 1;
+  MESSAGE_UPDATED = 2;
+  CHAT_UPDATED = 3;
+  USER_UPDATED = 4;
+}
+
+message TelegramEvent {
+  int64 id = 1;
+
+  TelegramEventType type = 2;
+  google.protobuf.Timestamp created_at = 3;
+
+  oneof payload {
+    telegram.TgMessage message = 4;
+    telegram.TgChat chat = 5;
+    telegram.TgUser user = 6;
+  }
+}
