@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package telegram;
+package service;
 
-option go_package = "github.com/thexmartin/proto/account;telegram";
+option go_package = "github.com/prosperofair/proto";
 
 import "google/protobuf/timestamp.proto";
 
@@ -60,4 +60,47 @@ message TgMessage {
   TgFile file = 10;
   TgChat chat = 11;
   google.protobuf.Timestamp date = 12;
+}
+
+
+enum TelegramEventType {
+  UNKNOWN = 0;
+  MESSAGE_NEW = 1;
+  MESSAGE_UPDATED = 2;
+  CHAT_UPDATED = 3;
+  USER_UPDATED = 4;
+}
+
+message TelegramEvent {
+  int64 id = 1;
+
+  TelegramEventType type = 2;
+  google.protobuf.Timestamp created_at = 3;
+
+  oneof payload {
+    TgMessage message = 4;
+    TgChat chat = 5;
+    TgUser user = 6;
+  }
+}
+
+
+// Request to push one or multiple events
+message PushEventsRequest {
+  repeated TelegramEvent events = 1;
+}
+
+// Response for push (empty ack)
+message PushEventsResponse {}
+
+// Request to subscribe to events
+message SubscribeEventsRequest {}
+
+// Server stream of events
+message EventStreamResponse {
+  TelegramEvent event = 1;
+}
+
+service AccountService {
+  rpc PushEvents(PushEventsRequest) returns (PushEventsResponse);
 }
