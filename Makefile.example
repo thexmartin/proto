@@ -1,0 +1,24 @@
+# Install protoc plugins for Go (required for code generation)
+protoc-install:
+	# protoc-gen-go: generates Go structs from proto messages
+	# protoc-gen-go-grpc: generates Go gRPC service interfaces
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+# Prepare the output directory for generated code
+protoprepare:
+	mkdir -p gen/grpc/
+
+# Clean previously generated files
+protoclean:
+	rm -rf gen/grpc/*
+
+# Generate Go and gRPC code from proto files
+protogen: protoprepare
+	protoc \
+		-I proto \                         # Specify proto import path
+		--go_out=gen/grpc \                # Output Go code for messages
+		--go-grpc_out=gen/grpc \           # Output Go code for gRPC services
+		--go_opt=module=github.com/prosperofair/proto \       # Module path for generated Go code
+		--go-grpc_opt=module=github.com/prosperofair/proto \  # Module path for gRPC service code
+		./proto/accounts/events/account_events.proto         # Proto file to compile

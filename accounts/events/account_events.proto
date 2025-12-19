@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package events.v1;
+
+option go_package = "github.com/prosperofair/proto/account_events";
+
+message SubscribeRequest {
+  int64 account_id = 1;
+}
+
+message Event {
+  int32 account_id = 1;
+  string type = 2;
+  string payload = 3; // json
+  int64 timestamp = 4;
+}
+
+service EventService {
+  rpc Subscribe(SubscribeRequest) returns (stream Event);
+}
