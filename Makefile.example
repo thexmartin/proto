@@ -21,4 +21,4 @@ protogen: protoprepare
 		--go-grpc_out=gen/grpc \           # Output Go code for gRPC services
 		--go_opt=module=github.com/prosperofair/proto \       # Module path for generated Go code
 		--go-grpc_opt=module=github.com/prosperofair/proto \  # Module path for gRPC service code
-		./proto/accounts/events/account_events.proto         # Proto file to compile
+		./proto/accounts/events/service.proto         # Proto file to compile

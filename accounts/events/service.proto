@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package events.v1;
+package events;
 
-option go_package = "github.com/prosperofair/proto/account_events";
+option go_package = "github.com/prosperofair/proto/accountevents";
 
 message SubscribeRequest {
   int64 account_id = 1;
