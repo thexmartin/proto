@@ -16,9 +16,8 @@ protoclean:
 # Generate Go and gRPC code from proto files
 protogen: protoprepare
 	protoc \
-		-I proto \                         # Specify proto import path
-		--go_out=gen/grpc \                # Output Go code for messages
-		--go-grpc_out=gen/grpc \           # Output Go code for gRPC services
-		--go_opt=module=github.com/prosperofair/proto \       # Module path for generated Go code
-		--go-grpc_opt=module=github.com/prosperofair/proto \  # Module path for gRPC service code
-		./proto/accounts/events/service.proto         # Proto file to compile
+	-I proto --go_out=gen/grpc \                                # Specify proto import path and output Go code for messages
+ 	--go-grpc_out=gen/grpc \
+ 	--go_opt=module=github.com/prosperofair/proto \             # Module path for generated Go code
+ 	--go-grpc_opt=module=github.com/prosperofair/proto \        # Module path for gRPC service code
+ 	./proto/accounts/events/service.proto
