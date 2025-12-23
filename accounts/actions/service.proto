@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package events;
+package actions;
 
 option go_package = "github.com/prosperofair/proto/accountactions";
 
