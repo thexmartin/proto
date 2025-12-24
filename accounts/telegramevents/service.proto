@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package telegramevents;
+
+option go_package = "github.com/prosperofair/proto/telegramevents";
+
+message Event {
+  int64 account_id = 1;
+  string type = 2;
+  string payload = 3; // json
+  int64 timestamp = 4;
+}
+
+message PushResult {}
+
+service EventService {
+  // Client opens connection and continuously sends events
+  rpc Push(stream Event) returns (PushResult);
+}
