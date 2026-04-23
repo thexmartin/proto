@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package outbox;
+
+option go_package = "github.com/prosperofair/proto/accountoutbox";
+
+// StreamRequest opens a server-side stream of outbox events.
+//
+// after_id is the cursor: only events with id > after_id are streamed.
+// Pass 0 on the very first call to receive everything from scratch.
+//
+// event_types is an optional filter; empty means "all event types".
+message StreamRequest {
+  int64 after_id = 1;
+  repeated string event_types = 2;
+}
+
+// OutboxEvent is one row from the events_outbox table.
+//
+// payload is opaque JSON; the consumer decodes it according to event_type
+// (see pkg/accounts/outbox for typed payload structs).
+message OutboxEvent {
+  int64 id = 1;
+  string event_type = 2;
+  string payload = 3;
+  int64 created_at_unix_ns = 4;
+}
+
+// OutboxService delivers persistent cross-service events.
+//
+// Unlike EventService.Subscribe (which is per-account, transient, in-memory),
+// OutboxService is global, persistent (backed by events_outbox table) and
+// supports replay via the after_id cursor.
+service OutboxService {
+  rpc Stream(StreamRequest) returns (stream OutboxEvent);
+}
