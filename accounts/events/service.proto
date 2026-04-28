@@ -13,6 +13,7 @@ message Event {
   string type = 2;
   string payload = 3; // json
   int64 timestamp = 4;
+  map<string, string> labels = 5; // routing keys (account_id, chat_id, message_id, ...) — duplicated for broker/non-Go consumers
 }
 
 service EventService {
