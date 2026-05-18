@@ -25,11 +25,17 @@ message Action {
   int32 attempts = 12; // 1 on first delivery, +1 on each Reserve
 }
 
-// StreamHello is the bot's opening handshake on Stream: which account it
-// is subscribing on behalf of, and the max in-flight actions it can hold.
+// StreamHello is the bot's opening handshake on Stream: which account
+// it serves, which lane this stream feeds, and the max in-flight
+// actions for that lane.
+//
+// One stream per (account, lane) — the bot opens main/upload/read_date
+// in parallel. gRPC flow control isolates them so a stalled upload
+// stream doesn't block chat actions on the main stream.
 message StreamHello {
   int64 account_id = 1;
   int32 capacity = 2;
+  string lane = 3;
 }
 
 // AckResult is the bot's reply for one previously-streamed Action.
