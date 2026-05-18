@@ -53,12 +53,22 @@ message AckResult {
   int64 retry_after_ms = 5;
 }
 
+// Heartbeat keeps a long-running action alive on the server: while the
+// bot makes progress (e.g. a large media file is still downloading) it
+// sends a Heartbeat every few seconds and accounts pushes lease_until
+// forward, so the lease sweeper doesn't recycle the row.
+message Heartbeat {
+  int64 action_id = 1;
+}
+
 // ActionAck multiplexes the client-to-server messages on the bidi Stream:
-// first message MUST be hello, subsequent messages are result acks.
+// first message MUST be hello, subsequent messages are result acks or
+// heartbeats.
 message ActionAck {
   oneof body {
     StreamHello hello = 1;
     AckResult result = 2;
+    Heartbeat heartbeat = 3;
   }
 }
 
