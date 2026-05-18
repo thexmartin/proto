@@ -17,34 +17,22 @@ message Action {
   int64 created_at = 7; // unix nano
   int64 updated_at = 8; // unix nano
 
-  // Dispatcher metadata so the bot sees its assignment without re-reading
-  // the database.
+  // Dispatcher metadata.
   int32 priority = 9;
   string lane = 10;
   string key = 11;     // empty if action has no sticky-exclusion key
   int32 attempts = 12; // 1 on first delivery, +1 on each Reserve
 }
 
-// StreamHello is the bot's opening handshake on Stream: which account
-// it serves, which lane this stream feeds, and the max in-flight
-// actions for that lane.
-//
-// One stream per (account, lane) — the bot opens main/upload/read_date
-// in parallel. gRPC flow control isolates them so a stalled upload
-// stream doesn't block chat actions on the main stream.
+// StreamHello: opening handshake. One stream per (account, lane).
 message StreamHello {
   int64 account_id = 1;
   int32 capacity = 2;
   string lane = 3;
 }
 
-// AckResult is the bot's reply for one previously-streamed Action.
-//
-// error_class is the canonical retry classification from the bot:
-//   - "transient"    — retry with exp backoff
-//   - "rate_limited" — retry after retry_after_ms
-//   - "permanent"    — terminal failure
-// Empty error_class on a non-done status is treated as "permanent".
+// AckResult. error_class ∈ {"transient", "rate_limited", "permanent"};
+// empty/unknown on a non-done status is treated as permanent.
 message AckResult {
   int64 action_id = 1;
   string status = 2;
@@ -53,17 +41,12 @@ message AckResult {
   int64 retry_after_ms = 5;
 }
 
-// Heartbeat keeps a long-running action alive on the server: while the
-// bot makes progress (e.g. a large media file is still downloading) it
-// sends a Heartbeat every few seconds and accounts pushes lease_until
-// forward, so the lease sweeper doesn't recycle the row.
+// Heartbeat extends lease_until for a long-running action.
 message Heartbeat {
   int64 action_id = 1;
 }
 
-// ActionAck multiplexes the client-to-server messages on the bidi Stream:
-// first message MUST be hello, subsequent messages are result acks or
-// heartbeats.
+// ActionAck: first message MUST be hello, then results / heartbeats.
 message ActionAck {
   oneof body {
     StreamHello hello = 1;
@@ -73,9 +56,7 @@ message ActionAck {
 }
 
 service ActionService {
-  // Stream is the bidi flow: the bot opens it, sends StreamHello, then
-  // alternates between receiving Action messages and sending AckResult.
-  // The server respects the capacity advertised in hello — at most
-  // `capacity` actions are in flight without an ack at any time.
+  // Stream: bot opens, sends hello, then receives Action and sends
+  // AckResult/Heartbeat. Server caps in-flight at hello.capacity.
   rpc Stream(stream ActionAck) returns (stream Action);
 }
