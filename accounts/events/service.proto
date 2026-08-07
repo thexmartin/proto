@@ -8,11 +8,29 @@ message SubscribeRequest {
   int64 account_id = 1;
 }
 
+// ScopeKind tells the consumer what an event is about, so it can decide who may
+// receive it without parsing the payload.
+enum ScopeKind {
+  // Producer does not fill scope yet; consumers must not infer visibility from it.
+  SCOPE_KIND_UNSPECIFIED = 0;
+  // Concerns the account as a whole.
+  SCOPE_KIND_ACCOUNT = 1;
+  // Concerns the chats listed in chat_ids.
+  SCOPE_KIND_CHATS = 2;
+}
+
+message EventScope {
+  ScopeKind kind = 1;
+  // Internal chat ids, never Telegram ids.
+  repeated int32 chat_ids = 2;
+}
+
 message Event {
   int32 account_id = 1;
   string type = 2;
   string payload = 3; // json
   int64 timestamp = 4;
+  EventScope scope = 5;
 }
 
 service EventService {
