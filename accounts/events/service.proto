@@ -17,6 +17,9 @@ enum ScopeKind {
   SCOPE_KIND_ACCOUNT = 1;
   // Concerns the chats listed in chat_ids.
   SCOPE_KIND_CHATS = 2;
+  // Producer tried to name the chat and could not. Distinct from UNSPECIFIED so a
+  // resolution failure stays visible while older producers still emit UNSPECIFIED.
+  SCOPE_KIND_UNRESOLVED = 3;
 }
 
 message EventScope {
